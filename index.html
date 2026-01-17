@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2P15WNNY8V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);} 
+        gtag('js', new Date());
+
+        gtag('config', 'G-2P15WNNY8V');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三体：王权 - 文明抉择</title>
+    <style>
+        @import url('data:font/woff2;base64,');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --text-primary: #E0E0E0;
+            --text-accent: #4FC3F7;
+            --color-positive: #66BB6A;
+            --color-negative: #EF5350;
+            --color-science: #29B6F6;
+            --color-people: #9CCC65;
+            --color-military: #FFA726;
+            --color-resources: #FFEE58;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            image-rendering: pixelated;
+            user-select: none;
+        }
+        
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loader-text {
+            font-size: 1.5rem;
+            color: var(--text-accent);
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .loader-progress {
+            height: 100%;
+            background: var(--text-accent);
+            width: 0;
+            animation: loading 3s ease-out forwards;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes loading {
+            to { width: 100%; }
+        }
+        
+        .game-container {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #gameContainer {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .loading-log {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--text-accent);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1001;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .log-info {
+            color: var(--text-accent);
+        }
+        
+        .log-success {
+            color: var(--color-positive);
+        }
+        
+        .log-error {
+            color: var(--color-negative);
+        }
+        
+        .log-warning {
+            color: var(--color-resources);
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .game-title {
+            font-size: 1.8rem;
+            color: var(--text-accent);
+            text-shadow: 0 0 10px var(--text-accent);
+        }
+        
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .menu-btn:hover {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .stat-bar.critical {
+            border-color: var(--color-negative);
+            animation: critical-flash 1s infinite;
+        }
+        
+        @keyframes critical-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            transition: width 0.5s ease-out;
+            border-radius: 4px;
+        }
+        
+        .stat-science .stat-fill { background: var(--color-science); }
+        .stat-people .stat-fill { background: var(--color-people); }
+        .stat-military .stat-fill { background: var(--color-military); }
+        .stat-resources .stat-fill { background: var(--color-resources); }
+        
+        .card-area {
+            perspective: 1000px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .event-card {
+            width: 100%;
+            max-width: 350px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--text-accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: grab;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            transform-style: preserve-3d;
+            user-select: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .event-card:active {
+            cursor: grabbing;
+        }
+        
+        .event-card.dragging {
+            transform: scale(1.05);
+            box-shadow: 0 16px 64px rgba(79, 195, 247, 0.3);
+        }
+        
+        .card-speaker {
+            font-size: 0.9rem;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .card-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .choice-preview {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-primary);
+            color: var(--text-accent);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--text-accent);
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        
+        .choice-left {
+            left: -200px;
+        }
+        
+        .choice-right {
+            right: -200px;
+        }
+        
+        .choice-preview.visible {
+            opacity: 1;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .era-info {
+            font-size: 0.9rem;
+            color: var(--text-accent);
+        }
+        
+        .turn-info {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+        
+        .event-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        
+        .tag {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--text-accent);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .btn {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 0.25rem;
+        }
+        
+        .btn:hover {
+            background: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: none;
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+        }
+        
+        .death-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .death-title {
+            font-size: 2rem;
+            color: var(--color-negative);
+            margin-bottom: 1rem;
+            animation: death-pulse 2s infinite;
+        }
+        
+        @keyframes death-pulse {
+            0%, 100% { text-shadow: 0 0 20px var(--color-negative); }
+            50% { text-shadow: 0 0 40px var(--color-negative); }
+        }
+        
+        .victory-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .victory-title {
+            font-size: 2rem;
+            color: var(--color-positive);
+            margin-bottom: 1rem;
+            animation: victory-glow 3s infinite;
+        }
+        
+        @keyframes victory-glow {
+            0%, 100% { text-shadow: 0 0 20px var(--color-positive); }
+            50% { text-shadow: 0 0 60px var(--color-positive); }
+        }
+        
+        .instruction-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .instruction-content {
+            text-align: center;
+            padding: 2rem;
+            max-width: 400px;
+        }
+        
+        .instruction-title {
+            font-size: 1.5rem;
+            color: var(--text-accent);
+            margin-bottom: 1rem;
+        }
+        
+        .instruction-text {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .keyboard-hint {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-accent);
+        }
+        
+        /* Help Modal Styling */
+        #helpModal .modal-content {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-accent) var(--bg-secondary);
+        }
+        
+        #helpModal .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #helpModal .modal-content::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        #helpModal .modal-content::-webkit-scrollbar-thumb {
+            background: var(--text-accent);
+            border-radius: 4px;
+        }
+        
+        #helpModal h3 {
+            border-bottom: 2px solid var(--text-accent);
+            padding-bottom: 0.5rem;
+        }
+        
+        #helpModal ul {
+            list-style-type: disc;
+        }
+        
+        #helpModal li {
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 0.5rem;
+            }
+            
+            .event-card {
+                max-width: 320px;
+                padding: 1rem;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .choice-preview {
+                font-size: 0.9rem;
+                padding: 0.75rem 1rem;
+            }
+            
+            .choice-left {
+                left: -150px;
+            }
+            
+            .choice-right {
+                right: -150px;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* 调试面板样式 */
+        .debug-panel {
+            position: fixed;
+            top: 20px;
+            right: -350px;
+            width: 340px;
+            height: calc(100vh - 40px);
+            background: var(--bg-secondary);
+            border: 1px solid var(--text-accent);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            font-size: 0.85rem;
+            overflow-y: auto;
+        }
+        
+        .debug-panel.show {
+            right: 20px;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--text-accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            z-index: 1001;
+            transition: all 0.3s;
+        }
+        
+        .debug-toggle:hover {
+            background: var(--text-primary);
+        }
+        
+        .debug-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .debug-title {
+            color: var(--text-accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--text-accent);
+            padding-bottom: 0.25rem;
+        }
+        
+        .debug-item {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        
+        .debug-key {
+            color: var(--color-science);
+            font-weight: bold;
+        }
+        
+        .debug-value {
+            color: var(--text-primary);
+        }
+        
+        .debug-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .debug-list-item {
+            background: var(--bg-primary);
+            padding: 0.4rem 0.6rem;
+            margin-bottom: 0.3rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .debug-card-weight {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .debug-weight-value {
+            background: var(--color-positive);
+            color: var(--bg-primary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        .effect-indicator {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: var(--text-accent);
+            color: var(--bg-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            animation: fadeInOut 2s ease-out;
+            pointer-events: none;
+        }
+        
+        .effect-indicator.positive {
+            background: var(--color-positive);
+        }
+        
+        .effect-indicator.negative {
+            background: var(--color-negative);
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader">
+        <div class="loader-text">正在进入三体世界...</div>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+        <div class="loading-log" id="loadingLog"></div>
+    </div>
+
+    <div class="game-container" id="gameContainer">
+        <header class="game-header">
+            <h1 class="game-title">三体：王权</h1>
+            <button class="menu-btn" id="menuBtn">⚙️ 菜单</button>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-bar stat-science" id="scienceStat">
+                <div class="stat-icon">🔒</div>
+                <div class="stat-content">
+                    <div class="stat-label">智子封锁</div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" id="scienceFill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-bar stat-people" id="peopleStat">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-content">
+                    <div class="stat-label">人类团结</div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" id="peopleFill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-bar stat-military" id="militaryStat">
+                <div class="stat-icon">☢️</div>
+                <div class="stat-content">
+                    <div class="stat-label">威慑度</div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" id="militaryFill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-bar stat-resources" id="resourcesStat">
+                <div class="stat-icon">🌍</div>
+                <div class="stat-content">
+                    <div class="stat-label">生存资源</div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" id="resourcesFill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="era-info" id="eraInfo">锁死物理初期</div>
+            <div class="turn-info" id="turnInfo">第 1 年</div>
+        </div>
+
+        <div class="card-area" id="cardArea">
+            <div class="event-card" id="eventCard">
+                <div class="card-speaker" id="cardSpeaker">系统</div>
+                <div class="card-title" id="cardTitle">正在加载...</div>
+                <div class="card-text" id="cardText">初始化游戏世界中...</div>
+            </div>
+            
+            <div class="choice-preview choice-left" id="choiceLeft">
+                <div class="choice-text">选择左侧</div>
+            </div>
+            
+            <div class="choice-preview choice-right" id="choiceRight">
+                <div class="choice-text">选择右侧</div>
+            </div>
+        </div>
+
+        <div class="event-tags" id="eventTags"></div>
+        
+        <!-- 调试面板 -->
+        <button class="debug-toggle" id="debugToggle">🐛 调试</button>
+        <div class="debug-panel" id="debugPanel">
+            <div class="debug-section">
+                <div class="debug-title">事件导演 (EventDirector)</div>
+                <div class="debug-item">
+                    <span class="debug-key">当前时代:</span>
+                    <span class="debug-value" id="debugCurrentEra">-</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-key">回合数:</span>
+                    <span class="debug-value" id="debugCurrentTurn">-</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-key">已见事件:</span>
+                    <span class="debug-value" id="debugSeenEvents">-</span>
+                </div>
+            </div>
+            
+            <div class="debug-section">
+                <div class="debug-title">承诺/债务系统 (PromiseDebtSystem)</div>
+                <div class="debug-item">
+                    <span class="debug-key">活跃承诺:</span>
+                    <span class="debug-value" id="debugActivePromises">0</span>
+                </div>
+                <ul class="debug-list" id="debugPromisesList"></ul>
+                <div class="debug-item">
+                    <span class="debug-key">活跃债务:</span>
+                    <span class="debug-value" id="debugActiveDebts">0</span>
+                </div>
+                <ul class="debug-list" id="debugDebtsList"></ul>
+            </div>
+            
+            <div class="debug-section">
+                <div class="debug-title">下一张卡牌预测</div>
+                <div class="debug-item">
+                    <span class="debug-key">候选卡牌数:</span>
+                    <span class="debug-value" id="debugCandidateCount">-</span>
+                </div>
+                <ul class="debug-list" id="debugTopCards"></ul>
+            </div>
+            
+            <div class="debug-section">
+                <div class="debug-title">隐藏数值</div>
+                <div class="debug-item">
+                    <span class="debug-key">黑暗森林风险:</span>
+                    <span class="debug-value" id="debugDarkForest">0</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-key">三体威胁:</span>
+                    <span class="debug-value" id="debugTrisolaris">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instruction-overlay" id="instructionOverlay">
+            <div class="instruction-content">
+                <div class="instruction-title">游戏说明</div>
+                <div class="instruction-text">
+                    这是一个关于文明抉择的策略游戏。每次决策都会影响四大计量：科研、民心、军备、资源。
+                    <br><br>
+                    任何一项计量到达顶部或底部都将导致游戏结束。
+                    <br><br>
+                    请明智地做出每一个决策，人类文明的未来掌握在你手中。
+                </div>
+                <button class="btn" id="startGameBtn">开始游戏</button>
+                <div class="keyboard-hint">
+                    💡 可使用左右方向键或拖拽卡片进行选择
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="menuModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeMenu">×</button>
+            <h2>游戏菜单</h2>
+            <div style="margin-top: 2rem;">
+                <button class="btn" id="continueBtn">继续游戏</button>
+                <button class="btn" id="newGameBtn">新游戏</button>
+                <button class="btn btn-secondary" id="helpBtn">游戏帮助</button>
+                <button class="btn btn-secondary" id="resetBtn">重置存档</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <div id="gameOverContent"></div>
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="btn" id="restartBtn">重新开始</button>
+                <button class="btn btn-secondary" id="backToMenuBtn">返回菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="helpModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" id="closeHelp">×</button>
+            <h2 style="color: var(--text-accent); margin-bottom: 1.5rem;">📖 游戏帮助</h2>
+            
+            <div style="text-align: left; line-height: 1.8;">
+                <h3 style="color: var(--text-accent); margin-top: 1rem;">🎮 游戏简介</h3>
+                <p style="margin-bottom: 1rem;">
+                    《三体：王权》是一款基于《三体》宇宙背景的策略决策游戏。你将通过一系列二选一的抉择，管理人类文明的四大关键计量，在复杂的政治与科技博弈中生存并达成文明目标。
+                </p>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">🕹️ 基本操作</h3>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>鼠标</strong>：点击左右选项按钮进行选择</li>
+                    <li><strong>键盘</strong>：使用 ← → 方向键选择左右选项</li>
+                    <li><strong>触摸</strong>：在移动设备上可以左右滑动卡片</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">📊 四大计量系统</h3>
+                <p style="margin-bottom: 0.5rem;">每个决策都会影响以下四项关键指标：</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong style="color: var(--color-science);">🔬 科研（智子封锁）</strong>：科技发展水平，物理学被三体智子锁死，突破极其困难</li>
+                    <li><strong style="color: var(--color-people);">🤝 民心（人类团结）</strong>：社会凝聚力与民众支持度，关系到文明内部稳定</li>
+                    <li><strong style="color: var(--color-military);">☢️ 军备（威慑度）</strong>：军事力量与威慑能力，是对抗三体的关键</li>
+                    <li><strong style="color: var(--color-resources);">🌍 资源（生存资源）</strong>：经济实力与物资储备，维持文明运转的基础</li>
+                </ul>
+                <p style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(239, 83, 80, 0.2); border-left: 3px solid var(--color-negative); border-radius: 4px;">
+                    ⚠️ <strong>危险提示</strong>：任何一项计量到达顶部（100）或底部（0）都将导致游戏结束！
+                </p>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">🌑 隐藏计量</h3>
+                <p style="margin-bottom: 0.5rem;">除了可见的四大计量，还有两项隐藏指标：</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>黑暗森林风险</strong>：地球暴露程度，过高会引发宇宙中其他文明的打击</li>
+                    <li><strong>三体威胁</strong>：三体舰队的威胁等级，影响地球防御压力</li>
+                </ul>
+                <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-accent);">
+                    💡 开启调试面板（点击"🐛 调试"按钮）可以查看这些隐藏数值
+                </p>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">🎯 游戏目标</h3>
+                <p style="margin-bottom: 0.5rem;">在保持四大计量平衡的前提下，达成以下任一<strong>胜利条件</strong>：</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>威慑稳态</strong>：建立可持续威慑体系并维持足够回合数</li>
+                    <li><strong>文明分流</strong>：完成地表留守+曲率飞船远征的双重保险策略</li>
+                    <li><strong>沉默协定</strong>：通过外交降低黑暗森林风险至安全水平</li>
+                    <li><strong>长期生存</strong>：维持平衡超过200回合</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">⏳ 时代演进</h3>
+                <p style="margin-bottom: 0.5rem;">游戏将经历多个重要时代，每个时代有不同的挑战：</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>锁死物理初期</strong>：基础物理被智子锁定，科技发展受阻</li>
+                    <li><strong>面壁/破壁期</strong>：面壁计划与破壁人的智力对抗</li>
+                    <li><strong>威慑建立期</strong>：建立对三体的战略威慑体系</li>
+                    <li><strong>执剑人时代</strong>：威慑维护与执剑人传承</li>
+                    <li><strong>远征/危机期</strong>：深空探索与威慑失效风险</li>
+                    <li><strong>文明抉择期</strong>：人类文明的最终方向选择</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">👥 主要阵营</h3>
+                <p style="margin-bottom: 0.5rem;">你将与多个阵营互动，每个决策都会影响与他们的关系：</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>面壁者</strong>：承担拯救人类使命的战略规划者</li>
+                    <li><strong>破壁人</strong>：试图破解面壁计划的三体协作者</li>
+                    <li><strong>ETO（地球三体组织）</strong>：支持三体入侵的激进组织</li>
+                    <li><strong>联合国/执剑体系</strong>：全球治理机构</li>
+                    <li><strong>军工复合体</strong>：军事工业集团</li>
+                    <li><strong>学术界、媒体、企业、航天局</strong>：各种社会力量</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">⚡ 特殊机制</h3>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>承诺系统</strong>：某些决策会产生未来的承诺奖励</li>
+                    <li><strong>债务系统</strong>：某些决策会产生未来的债务惩罚</li>
+                    <li><strong>成就系统</strong>：完成特定目标解锁成就</li>
+                    <li><strong>种子系统</strong>：每局游戏有唯一种子，可用于复现</li>
+                    <li><strong>自动存档</strong>：游戏进度自动保存到本地</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">💡 游戏技巧</h3>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li>保持<strong>平衡</strong>是关键：不要让任何单项计量过高或过低</li>
+                    <li>注意<strong>长期后果</strong>：某些选择的影响会在未来回合显现</li>
+                    <li>关注<strong>时代转换</strong>：不同时代有不同的优先级</li>
+                    <li>谨慎处理<strong>黑暗森林风险</strong>：过度暴露可能带来毁灭</li>
+                    <li>建立<strong>威慑体系</strong>：这是对抗三体的核心策略</li>
+                    <li>善用<strong>调试面板</strong>：了解隐藏数值有助于更好决策</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">🔧 功能说明</h3>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li><strong>⚙️ 菜单</strong>：访问游戏设置、新游戏、帮助和存档管理</li>
+                    <li><strong>🐛 调试</strong>：查看隐藏数值和游戏状态（开发者模式）</li>
+                    <li><strong>存档管理</strong>：游戏自动保存，可以随时重置存档</li>
+                </ul>
+
+                <h3 style="color: var(--text-accent); margin-top: 1.5rem;">🌟 开局提示</h3>
+                <p style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(79, 195, 247, 0.2); border-left: 3px solid var(--text-accent); border-radius: 4px;">
+                    游戏以叶文洁在红岸基地的关键抉择开始。你将决定是否回应来自三体世界的警告信号。<br>
+                    <strong>这个选择将开启完全不同的故事线！</strong>
+                </p>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(79, 195, 247, 0.1); border-radius: 8px; text-align: center;">
+                    <p style="font-style: italic; color: var(--text-accent); margin: 0;">
+                        "给岁月以文明，而不是给文明以岁月。"
+                    </p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        —— 人类文明的命运，掌握在你手中
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 更新的游戏状态管理 ====================
+        class GameState {
+            constructor() {
+                this.stats = {
+                    '智子封锁': 30,  // 初始智子已经部分封锁
+                    '人类团结': 50,  // 人类初始半团结状态
+                    '威慑度': 0,     // 初始无威慑
+                    '生存资源': 70   // 初始资源充足
+                };
+                this.hiddenStats = {
+                    '黑暗森林风险': 0,
+                    '三体威胁': 0
+                };
+                this.flags = new Set();
+                this.currentEra = '锁死物理初期';
+                this.turn = 1;
+                this.seenEvents = new Set();
+                this.currentEvent = null;
+                this.gameOver = false;
+                this.victory = false;
+                this.difficulty = 'Normal';
+                this.seed = this.generateSeed();
+                
+                // 新系统初始化
+                this.eventDirector = new EventDirector(this);
+                this.promiseDebtSystem = new PromiseDebtSystem(this);
+                this.achievements = new Set();
+                this.specialEventTriggers = new Map();
+            }
+            
+            generateSeed() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+            
+            save() {
+                const saveData = {
+                    stats: { ...this.stats },
+                    hiddenStats: { ...this.hiddenStats },
+                    flags: Array.from(this.flags),
+                    currentEra: this.currentEra,
+                    turn: this.turn,
+                    seenEvents: Array.from(this.seenEvents),
+                    difficulty: this.difficulty,
+                    seed: this.seed,
+                    achievements: Array.from(this.achievements),
+                    // 保存承诺和债务系统
+                    promises: this.promiseDebtSystem.promises,
+                    debts: this.promiseDebtSystem.debts,
+                    promiseIdCounter: this.promiseDebtSystem.promiseIdCounter,
+                    debtIdCounter: this.promiseDebtSystem.debtIdCounter,
+                    // 保存事件导演状态
+                    eventWeights: Array.from(this.eventDirector.eventWeights.entries()),
+                    lastEventTypes: this.eventDirector.lastEventTypes
+                };
+                localStorage.setItem('trisolarisReignsSave', JSON.stringify(saveData));
+            }
+            
+            load() {
+                const saveData = localStorage.getItem('trisolarisReignsSave');
+                if (saveData) {
+                    const data = JSON.parse(saveData);
+                    this.stats = data.stats || { '科研': 50, '民心': 50, '军备': 50, '资源': 50 };
+                    this.hiddenStats = data.hiddenStats || { '黑暗森林风险': 0, '三体威胁': 0 };
+                    this.flags = new Set(data.flags || []);
+                    this.currentEra = data.currentEra || '锁死物理初期';
+                    this.turn = data.turn || 1;
+                    this.seenEvents = new Set(data.seenEvents || []);
+                    this.difficulty = data.difficulty || 'Normal';
+                    this.seed = data.seed || this.generateSeed();
+                    this.achievements = new Set(data.achievements || []);
+                    
+                    // 初始化系统
+                    this.eventDirector = new EventDirector(this);
+                    this.promiseDebtSystem = new PromiseDebtSystem(this);
+                    
+                    // 恢复承诺和债务系统
+                    if (data.promises) {
+                        this.promiseDebtSystem.promises = data.promises;
+                        this.promiseDebtSystem.promiseIdCounter = data.promiseIdCounter || 1;
+                    }
+                    if (data.debts) {
+                        this.promiseDebtSystem.debts = data.debts;
+                        this.promiseDebtSystem.debtIdCounter = data.debtIdCounter || 1;
+                    }
+                    
+                    // 恢复事件导演状态
+                    if (data.eventWeights) {
+                        this.eventDirector.eventWeights = new Map(data.eventWeights);
+                    }
+                    if (data.lastEventTypes) {
+                        this.eventDirector.lastEventTypes = data.lastEventTypes;
+                    }
+                    
+                    return true;
+                }
+                return false;
+            }
+            
+            reset() {
+                localStorage.removeItem('trisolarisReignsSave');
+                this.stats = { '科研': 50, '民心': 50, '军备': 50, '资源': 50 };
+                this.hiddenStats = { '黑暗森林风险': 0, '三体威胁': 0 };
+                this.flags = new Set();
+                this.currentEra = '锁死物理初期';
+                this.turn = 1;
+                this.seenEvents = new Set();
+                this.currentEvent = null;
+                this.gameOver = false;
+                this.victory = false;
+                this.seed = this.generateSeed();
+                this.achievements = new Set();
+                
+                // 重置系统
+                this.eventDirector = new EventDirector(this);
+                this.promiseDebtSystem = new PromiseDebtSystem(this);
+                this.specialEventTriggers = new Map();
+            }
+            
+            // 添加成就系统
+            addAchievement(achievementId, description) {
+                if (!this.achievements.has(achievementId)) {
+                    this.achievements.add(achievementId);
+                    console.log(`解锁成就: ${description}`);
+                    this.showAchievementNotification(description);
+                }
+            }
+            
+            showAchievementNotification(description) {
+                // 展示成就通知
+                const notification = document.createElement('div');
+                notification.className = 'achievement-notification';
+                notification.innerHTML = `
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-text">
+                        <div class="achievement-title">成就解锁</div>
+                        <div class="achievement-desc">${description}</div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+            
+            // 检查特殊事件触发条件
+            checkSpecialEvents() {
+                // 根据特定条件触发特殊事件
+                const triggers = [
+                    {
+                        condition: () => this.turn === 10 && !this.flags.has('tutorial_completed'),
+                        action: () => {
+                            this.promiseDebtSystem.addPromise(
+                                '科研资助到达',
+                                { '科研': 5, '资源': 3 },
+                                5
+                            );
+                            this.flags.add('tutorial_completed');
+                        }
+                    },
+                    {
+                        condition: () => this.stats['黑暗森林风险'] > 20 && !this.flags.has('dark_forest_warning'),
+                        action: () => {
+                            this.promiseDebtSystem.addDebt(
+                                '黑暗森林警告',
+                                { '民心': -10, '军备': -5 },
+                                8,
+                                { type: 'stat', stat: '黑暗森林风险', operator: '>', value: 25 }
+                            );
+                            this.flags.add('dark_forest_warning');
+                        }
+                    }
+                ];
+                
+                triggers.forEach(trigger => {
+                    if (trigger.condition()) {
+                        trigger.action();
+                    }
+                });
+            }
+        }
+        
+        // ==================== 事件数据库（整合版）====================
+        // 将外部事件数据库整合到主文件中
+        
+        // 导入外部事件数据
+        const { eventDatabase } = (() => {
+            // 直接嵌入事件数据（从 event_database.js 整合）
+            const eventDatabase = {
+              // ========== 叶文洁开局链 (6张) ==========
+              "crisis_yewenjie_001": {
+                id: "crisis_yewenjie_001", era: "crisis", speaker: "叶文洁", title: "来自三体的警告",
+                text: "收到外星回复：'不要回答！不要回答！不要回答！你们的世界已被定位，回答将暴露地球坐标。'但看着文革的疯狂，我对人类已经绝望...",
+                tags: ["开局", "红岸", "关键抉择"],
+                left: {text: "听从警告，保持沉默", effects: {science: -1, military: -1, economy: 1, public: 2}, flags: ["stayed_silent"], hidden: {darkForest: -5, trisolaris: -10}},
+                right: {text: "回复：到这里来，拯救我们", effects: {science: 3, military: 2, economy: -2, public: -3}, flags: ["replied_trisolaris"], hidden: {darkForest: 10, trisolaris: 20}},
+                requires: {}, weight: 10, unique: true, deathCard: false
+              },
+            
+              "crisis_yewenjie_002": {
+                id: "crisis_yewenjie_002", era: "crisis", speaker: "叶文洁", title: "解码的真相",
+                text: "经过数月的分析，我终于解读了信号的含意。发送者警告我们不要回复，因为宇宙中存在更强大的文明，一旦暴露位置就意味着毁灭。但同时，我也发现了对方文明的坐标信息。",
+                tags: ["开局", "科研", "警告"],
+                left: {text: "遵守警告", effects: {science: 1, military: 1, economy: 0, public: 0}, flags: ["heeded_warning"], hidden: {darkForest: -1, trisolaris: 0}},
+                right: {text: "准备回复", effects: {science: 2, military: 0, economy: 0, public: -1}, flags: ["prepared_reply"], hidden: {darkForest: 2, trisolaris: 3}},
+                requires: {flags: ["secret_research"]}, weight: 10, unique: true, deathCard: false
+              },
+            
+              "crisis_yewenjie_003": {
+                id: "crisis_yewenjie_003", era: "crisis", speaker: "叶文洁", title: "文明的审判", 
+                text: "我想起了那个混乱的时代，想起了人类的愚昧和残酷。地球文明已经病入膏肓，也许来自群星的力量能够拯救这个世界，即使代价是人类的统治地位。我握着发射按钮，思考着人类的未来。",
+                tags: ["开局", "政治", "选择"],
+                left: {text: "发送信号", effects: {science: 0, military: 0, economy: 0, public: -2}, flags: ["signal_sent"], hidden: {darkForest: 3, trisolaris: 5}},
+                right: {text: "销毁设备", effects: {science: -1, military: 1, economy: 0, public: 1}, flags: ["destroyed_equipment"], hidden: {darkForest: 0, trisolaris: 0}},
+                requires: {flags: ["prepared_reply"]}, weight: 10, unique: true, deathCard: false
+              }
+            };
+            
+            // 批量生成其余事件卡
+            const eventTemplates = {
+              science: {
+                speakers: ["汪淼", "丁仪", "杨冬", "物理学家", "纳米专家"],
+                titles: ["智子干扰", "纳米丝", "物理学已死", "宇宙闪烁", "科学边界"],
+                baseText: "高能物理实验结果完全混乱。智子封锁了基础科学，物理学不存在了。"
+              },
+              public: {
+                speakers: ["伊文斯", "潘寒", "申玉菲", "ETO成员", "降临派"],
+                titles: ["地球叛军", "三体教", "人类末日", "文明审判", "物种灭绝"],
+                baseText: "ETO组织在全球扩张。他们认为人类是邪恶的，应该被三体文明消灭。"
+              },
+              military: {
+                speakers: ["军事专家", "指挥官", "战略家", "防务官员", "情报官"],
+                titles: ["古筝行动", "面壁计划", "太空舰队", "水滴预警", "引力波天线"],
+                baseText: "史强提出用纳米丝切割审判日号。这个行动可能获取ETO的关键情报，但会造成大量伤亡。"
+              },
+              economy: {
+                speakers: ["PDC", "行星防御理事会", "联合国", "太空军", "地下城建设者"],
+                titles: ["太空电梯", "地下城", "星际舰队", "掩体工程", "资源储备"],
+                baseText: "行星防御理事会提议建造太空电梯。这将耗费地球一半的钢铁产量，但对太空防御至关重要。"
+              }
+            };
+            
+            const eras = ["crisis", "deterrence", "broadcast", "bunker", "galaxy"];
+            
+            // 生成大量事件卡
+            let cardCount = 7; // 从第7张开始计数
+            
+            // 生成科研类事件卡 (20张，减少数量避免错误)
+            for (let i = 0; i < 20; i++) {
+              const era = eras[i % 5];
+              const template = eventTemplates.science;
+              eventDatabase[`science_${cardCount}`] = {
+                id: `science_${cardCount}`,
+                era: era,
+                speaker: template.speakers[i % 5],
+                title: `${template.titles[i % 5]}${Math.floor(i/5) + 1}`,
+                text: template.baseText + `我们必须谨慎权衡利弊，做出明智的决策。这关系到人类的未来发展方向。`,
+                tags: ["科研", "技术", "发展"],
+                left: {
+                  text: "积极推进",
+                  effects: {
+                    science: 2 + (i % 2),
+                    military: i % 3 - 1,
+                    economy: -1 + (i % 2),
+                    public: i % 3 - 1
+                  },
+                  flags: [`science_${cardCount}_active`],
+                  hidden: {darkForest: i % 3, trisolaris: i % 2}
+                },
+                right: {
+                  text: "谨慎研究",
+                  effects: {
+                    science: 1,
+                    military: 0,
+                    economy: 0,
+                    public: 1
+                  },
+                  flags: [`science_${cardCount}_cautious`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                requires: {},
+                weight: 4 + (i % 3),
+                unique: false,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            // 生成民心类事件卡 (15张，减少数量)
+            for (let i = 0; i < 15; i++) {
+              const era = eras[i % 5];
+              const template = eventTemplates.public;
+              eventDatabase[`public_${cardCount}`] = {
+                id: `public_${cardCount}`,
+                era: era,
+                speaker: template.speakers[i % 5],
+                title: `${template.titles[i % 5]}${Math.floor(i/5) + 1}`,
+                text: template.baseText + `我们需要倾听各方声音，寻找最佳的解决方案。社会和谐与进步需要每个人的参与。`,
+                tags: ["民心", "社会", "文化"],
+                left: {
+                  text: "积极应对",
+                  effects: {
+                    science: i % 2,
+                    military: 0,
+                    economy: i % 3 - 1,
+                    public: 2 + (i % 2)
+                  },
+                  flags: [`public_${cardCount}_active`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                right: {
+                  text: "维持现状",
+                  effects: {
+                    science: 0,
+                    military: 0,
+                    economy: 0,
+                    public: 1
+                  },
+                  flags: [`public_${cardCount}_maintain`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                requires: {},
+                weight: 5 + (i % 2),
+                unique: false,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            // 生成军备类事件卡 (15张，减少数量)
+            for (let i = 0; i < 15; i++) {
+              const era = eras[i % 5];
+              const template = eventTemplates.military;
+              eventDatabase[`military_${cardCount}`] = {
+                id: `military_${cardCount}`,
+                era: era,
+                speaker: template.speakers[i % 5],
+                title: `${template.titles[i % 5]}${Math.floor(i/5) + 1}`,
+                text: template.baseText + `我们必须在安全需求和资源限制之间找到平衡点。强大的防御力量是文明生存的基础。`,
+                tags: ["军备", "防御", "安全"],
+                left: {
+                  text: "全力执行",
+                  effects: {
+                    science: i % 2,
+                    military: 2 + (i % 2),
+                    economy: -2 + (i % 2),
+                    public: i % 3 - 1
+                  },
+                  flags: [`military_${cardCount}_full`],
+                  hidden: {darkForest: 0, trisolaris: -(i % 2)}
+                },
+                right: {
+                  text: "适度实施",
+                  effects: {
+                    science: i % 2,
+                    military: 1,
+                    economy: -1,
+                    public: 0
+                  },
+                  flags: [`military_${cardCount}_moderate`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                requires: {},
+                weight: 4 + (i % 3),
+                unique: false,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            // 生成资源类事件卡 (15张，减少数量)
+            for (let i = 0; i < 15; i++) {
+              const era = eras[i % 5];
+              const template = eventTemplates.economy;
+              eventDatabase[`economy_${cardCount}`] = {
+                id: `economy_${cardCount}`,
+                era: era,
+                speaker: template.speakers[i % 5],
+                title: `${template.titles[i % 5]}${Math.floor(i/5) + 1}`,
+                text: template.baseText + `经济发展与资源可持续利用是我们面临的长期挑战。明智的投资决策至关重要。`,
+                tags: ["经济", "资源", "发展"],
+                left: {
+                  text: "大胆改革",
+                  effects: {
+                    science: i % 2,
+                    military: i % 2,
+                    economy: 2 + (i % 2),
+                    public: i % 3 - 1
+                  },
+                  flags: [`economy_${cardCount}_reform`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                right: {
+                  text: "渐进调整",
+                  effects: {
+                    science: i % 2,
+                    military: 0,
+                    economy: 1,
+                    public: 1
+                  },
+                  flags: [`economy_${cardCount}_gradual`],
+                  hidden: {darkForest: 0, trisolaris: 0}
+                },
+                requires: {},
+                weight: 5 + (i % 2),
+                unique: false,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            // 生成死亡卡 (10张，减少数量)
+            const deathScenarios = ["技术失控", "社会崩溃", "环境灾难", "外星打击", "内部冲突"];
+            for (let i = 0; i < 10; i++) {
+              const scenario = deathScenarios[i % 5];
+              eventDatabase[`death_${cardCount}`] = {
+                id: `death_${cardCount}`,
+                era: eras[i % 5],
+                speaker: "末日见证者",
+                title: `${scenario}终局`,
+                text: `人类文明因为${scenario}而走向终结。所有的努力和希望都化为泡影，我们只能在最后时刻反思自己的选择。这就是文明可能面临的悲剧性结局。`,
+                tags: ["死亡", "终结", "失败"],
+                left: {
+                  text: "最后抗争",
+                  effects: {
+                    science: -3 - (i % 3),
+                    military: -3 - (i % 3),
+                    economy: -3 - (i % 3),
+                    public: -3 - (i % 3)
+                  },
+                  flags: [`death_${cardCount}_struggle`],
+                  hidden: {darkForest: i % 3, trisolaris: 5 + (i % 5)}
+                },
+                right: {
+                  text: "接受命运",
+                  effects: {
+                    science: -2 - (i % 3),
+                    military: -2 - (i % 3),
+                    economy: -2 - (i % 3),
+                    public: -2 - (i % 3)
+                  },
+                  flags: [`death_${cardCount}_accept`],
+                  hidden: {darkForest: i % 2, trisolaris: 3 + (i % 5)}
+                },
+                requires: {},
+                weight: 1,
+                unique: true,
+                deathCard: true
+              };
+              cardCount++;
+            }
+            
+            // 生成结局卡 (8张，减少数量)
+            const victories = ["科技胜利", "文化胜利", "外交胜利", "军事胜利"];
+            for (let i = 0; i < 8; i++) {
+              const victory = victories[i % 4];
+              eventDatabase[`ending_${cardCount}`] = {
+                id: `ending_${cardCount}`,
+                era: "galaxy",
+                speaker: "文明史学家",
+                title: `${victory}${Math.floor(i/4) + 1}`,
+                text: `经过漫长的奋斗，人类文明最终实现了${victory}。我们不仅生存了下来，还在宇宙中找到了自己的位置。这是一个值得永远铭记的伟大成就。`,
+                tags: ["结局", "胜利", "成就"],
+                left: {
+                  text: "继续前进",
+                  effects: {
+                    science: 4 + (i % 2),
+                    military: 3 + (i % 2),
+                    economy: 4 + (i % 2),
+                    public: 4 + (i % 2)
+                  },
+                  flags: [`ending_${cardCount}_advance`],
+                  hidden: {darkForest: i % 3 - 1, trisolaris: 0}
+                },
+                right: {
+                  text: "稳固成果",
+                  effects: {
+                    science: 3 + (i % 2),
+                    military: 2 + (i % 2),
+                    economy: 3 + (i % 2),
+                    public: 4 + (i % 2)
+                  },
+                  flags: [`ending_${cardCount}_consolidate`],
+                  hidden: {darkForest: i % 2 - 1, trisolaris: 0}
+                },
+                requires: {},
+                weight: 2,
+                unique: true,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            // 生成探索事件卡 (10张，减少数量)
+            const locations = ["火星", "木星", "小行星带", "深空", "异次元", "时空", "银河"];
+            for (let i = 0; i < 10; i++) {
+              const location = locations[i % 7];
+              eventDatabase[`exploration_${cardCount}`] = {
+                id: `exploration_${cardCount}`,
+                era: eras[(i + 1) % 5], // 避免太多crisis时代
+                speaker: "探索队长",
+                title: `${location}发现`,
+                text: `我们的探索队在${location}发现了意想不到的现象。这个发现可能包含着重要的科学价值或资源，但同时也存在未知的风险。探索未知需要勇气与智慧。`,
+                tags: ["探索", "发现", "冒险"],
+                left: {
+                  text: "深入调查",
+                  effects: {
+                    science: 2 + (i % 2),
+                    military: i % 2,
+                    economy: i % 2 - 1,
+                    public: i % 2
+                  },
+                  flags: [`exploration_${cardCount}_deep`],
+                  hidden: {darkForest: i % 3, trisolaris: i % 2}
+                },
+                right: {
+                  text: "谨慎观察",
+                  effects: {
+                    science: 1,
+                    military: 0,
+                    economy: 0,
+                    public: 1
+                  },
+                  flags: [`exploration_${cardCount}_cautious`],
+                  hidden: {darkForest: i % 2, trisolaris: 0}
+                },
+                requires: {},
+                weight: 3 + (i % 2),
+                unique: i > 10,
+                deathCard: false
+              };
+              cardCount++;
+            }
+            
+            return { eventDatabase, totalCards: Object.keys(eventDatabase).length };
+        })();
+        
+        // 转换事件数据格式以兼容现有系统
+        const EVENT_DATABASE = Object.values(eventDatabase).map(card => {
+            try {
+                return {
+                    id: card.id,
+                    era: card.era === 'crisis' ? '锁死物理初期' : 
+                         card.era === 'deterrence' ? '威慑期' :
+                         card.era === 'broadcast' ? '广播期' :
+                         card.era === 'bunker' ? '掩体期' :
+                         card.era === 'galaxy' ? '银河期' : '通用',
+                    speaker: card.speaker,
+                    title: card.title,
+                    text: card.text,
+                    tags: card.tags,
+                    left: {
+                        label: card.left && card.left.text ? card.left.text : "选择A",
+                        effects: card.left && card.left.effects ? {
+                            '科研': card.left.effects.science || 0,
+                            '民心': card.left.effects.public || 0,
+                            '军备': card.left.effects.military || 0,
+                            '资源': card.left.effects.economy || 0
+                        } : {},
+                        addFlags: card.left && card.left.flags ? card.left.flags : [],
+                        goto: null
+                    },
+                    right: {
+                        label: card.right && card.right.text ? card.right.text : "选择B",
+                        effects: card.right && card.right.effects ? {
+                            '科研': card.right.effects.science || 0,
+                            '民心': card.right.effects.public || 0,
+                            '军备': card.right.effects.military || 0,
+                            '资源': card.right.effects.economy || 0
+                        } : {},
+                        addFlags: card.right && card.right.flags ? card.right.flags : [],
+                        goto: null
+                    },
+                    requires: {
+                        flagsAll: card.requires && card.requires.flags ? card.requires.flags : [],
+                        flagsAny: [],
+                        eraAtLeast: null,
+                        notIfFlags: []
+                    },
+                    weight: card.weight || 1.0,
+                    unique: card.unique || false,
+                    deathCard: card.deathCard || false
+                };
+            } catch (error) {
+                console.error('转换事件卡失败:', card.id, error);
+                return null;
+            }
+        }).filter(card => card !== null);
+        
+        console.log(`事件数据库整合完成！总计事件卡：${EVENT_DATABASE.length} 张`);
+        console.log('EVENT_DATABASE前5张卡:', EVENT_DATABASE.slice(0, 5));
+        
+        // ==================== 核心系统 ====================
+        
+        // 1. 事件导演系统 (Event Director)
+        class EventDirector {
+            constructor(gameState) {
+                this.gameState = gameState;
+                this.eventHistory = [];
+                this.eventWeights = new Map();
+                this.lastEventTypes = [];
+                this.maxHistorySize = 10;
+                this.diversityBonus = 0.3; // 多样性奖励
+            }
+            
+            // 智能选择事件卡
+            selectNextEvent(availableEvents) {
+                if (availableEvents.length === 0) return null;
+                
+                // 计算每个事件的权重
+                const weightedEvents = availableEvents.map(event => {
+                    let weight = this.calculateEventWeight(event);
+                    
+                    // 防止重复事件
+                    weight *= this.getDiversityMultiplier(event);
+                    
+                    // 根据游戏状态调整权重
+                    weight *= this.getStateBasedMultiplier(event);
+                    
+                    // 根据时代调整权重
+                    weight *= this.getEraBasedMultiplier(event);
+                    
+                    return { event, weight };
+                });
+                
+                // 按权重排序并选择
+                const totalWeight = weightedEvents.reduce((sum, item) => sum + item.weight, 0);
+                let random = Math.random() * totalWeight;
+                
+                for (const item of weightedEvents) {
+                    random -= item.weight;
+                    if (random <= 0) {
+                        this.recordEvent(item.event);
+                        return item.event;
+                    }
+                }
+                
+                // 备用返回最后一个
+                const selected = weightedEvents[weightedEvents.length - 1].event;
+                this.recordEvent(selected);
+                return selected;
+            }
+            
+            // 计算事件基础权重
+            calculateEventWeight(event) {
+                let baseWeight = event.weight || 1.0;
+                
+                // 根据事件类型调整
+                const eventType = this.getEventType(event);
+                if (this.eventWeights.has(eventType)) {
+                    baseWeight += this.eventWeights.get(eventType);
+                }
+                
+                return Math.max(0.1, baseWeight);
+            }
+            
+            // 获取事件类型
+            getEventType(event) {
+                if (event.tags.includes('科研') || event.tags.includes('技术')) return 'science';
+                if (event.tags.includes('民心') || event.tags.includes('社会')) return 'public';
+                if (event.tags.includes('军备') || event.tags.includes('防御')) return 'military';
+                if (event.tags.includes('经济') || event.tags.includes('资源')) return 'economy';
+                if (event.deathCard) return 'death';
+                return 'general';
+            }
+            
+            // 获取多样性乘数
+            getDiversityMultiplier(event) {
+                const eventType = this.getEventType(event);
+                const recentTypeCount = this.lastEventTypes.filter(type => type === eventType).length;
+                
+                // 最近出现过的事件类型会降低权重
+                return Math.max(0.2, 1.0 - recentTypeCount * this.diversityBonus);
+            }
+            
+            // 根据游戏状态调整权重
+            getStateBasedMultiplier(event) {
+                let multiplier = 1.0;
+                const stats = this.gameState.stats;
+                const eventType = this.getEventType(event);
+                
+                // 根据当前状态调整相关事件的权重
+                switch (eventType) {
+                    case 'science':
+                        // 科研低时增加科研事件概率
+                        if (stats['科研'] < 30) multiplier *= 1.5;
+                        if (stats['科研'] > 70) multiplier *= 0.7;
+                        break;
+                    case 'public':
+                        if (stats['民心'] < 30) multiplier *= 1.5;
+                        if (stats['民心'] > 70) multiplier *= 0.7;
+                        break;
+                    case 'military':
+                        if (stats['军备'] < 30) multiplier *= 1.5;
+                        if (stats['军备'] > 70) multiplier *= 0.7;
+                        break;
+                    case 'economy':
+                        if (stats['资源'] < 30) multiplier *= 1.5;
+                        if (stats['资源'] > 70) multiplier *= 0.7;
+                        break;
+                }
+                
+                // 危险状态时增加相关事件
+                const criticalStats = Object.entries(stats).filter(([key, value]) => 
+                    value <= 15 || value >= 85
+                );
+                
+                if (criticalStats.length > 0) {
+                    multiplier *= 1.2; // 危机时增加相关事件
+                }
+                
+                return multiplier;
+            }
+            
+            // 根据时代调整权重
+            getEraBasedMultiplier(event) {
+                if (event.era === '通用') return 1.0;
+                if (event.era === this.gameState.currentEra) return 1.3;
+                return 0.8;
+            }
+            
+            // 记录事件
+            recordEvent(event) {
+                const eventType = this.getEventType(event);
+                this.eventHistory.push({
+                    event,
+                    type: eventType,
+                    turn: this.gameState.turn
+                });
+                
+                this.lastEventTypes.push(eventType);
+                if (this.lastEventTypes.length > this.maxHistorySize) {
+                    this.lastEventTypes.shift();
+                }
+                
+                if (this.eventHistory.length > this.maxHistorySize * 2) {
+                    this.eventHistory.shift();
+                }
+            }
+            
+            // 调整事件类型权重
+            adjustEventTypeWeight(eventType, delta) {
+                const currentWeight = this.eventWeights.get(eventType) || 0;
+                this.eventWeights.set(eventType, currentWeight + delta);
+            }
+            
+            // 获取调试信息
+            getDebugInfo(availableEvents) {
+                if (!availableEvents || availableEvents.length === 0) {
+                    return {
+                        candidateCount: 0,
+                        topCards: []
+                    };
+                }
+                
+                // 计算所有事件的权重
+                const weightedEvents = availableEvents.map(event => {
+                    let weight = this.calculateEventWeight(event);
+                    weight *= this.getDiversityMultiplier(event);
+                    weight *= this.getStateBasedMultiplier(event);
+                    weight *= this.getEraBasedMultiplier(event);
+                    
+                    return {
+                        event,
+                        weight: Math.round(weight * 100) / 100
+                    };
+                });
+                
+                // 按权重排序并取前5个
+                const topCards = weightedEvents
+                    .sort((a, b) => b.weight - a.weight)
+                    .slice(0, 5)
+                    .map(item => ({
+                        id: item.event.id,
+                        title: item.event.title,
+                        era: item.event.era,
+                        type: this.getEventType(item.event),
+                        weight: item.weight
+                    }));
+                
+                return {
+                    candidateCount: availableEvents.length,
+                    topCards
+                };
+            }
+        }
+        
+        // 2. 承诺/债务系统 (Promise/Debt System)
+        class PromiseDebtSystem {
+            constructor(gameState) {
+                this.gameState = gameState;
+                this.promises = [];
+                this.debts = [];
+                this.promiseIdCounter = 1;
+                this.debtIdCounter = 1;
+            }
+            
+            // 添加承诺（未来的正面效果）
+            addPromise(description, effect, turnsToTrigger, condition = null) {
+                const promise = {
+                    id: this.promiseIdCounter++,
+                    description,
+                    effect,
+                    createdTurn: this.gameState.turn,
+                    triggerTurn: this.gameState.turn + turnsToTrigger,
+                    condition,
+                    active: true
+                };
+                
+                this.promises.push(promise);
+                console.log(`新承诺: ${description} (将在第 ${promise.triggerTurn} 回合生效)`);
+                return promise;
+            }
+            
+            // 添加债务（未来的负面效果）
+            addDebt(description, penalty, turnsToTrigger, condition = null) {
+                const debt = {
+                    id: this.debtIdCounter++,
+                    description,
+                    penalty,
+                    createdTurn: this.gameState.turn,
+                    triggerTurn: this.gameState.turn + turnsToTrigger,
+                    condition,
+                    active: true
+                };
+                
+                this.debts.push(debt);
+                console.log(`新债务: ${description} (将在第 ${debt.triggerTurn} 回合生效)`);
+                return debt;
+            }
+            
+            // 检查和执行到期的承诺和债务
+            processTurn() {
+                const currentTurn = this.gameState.turn;
+                const triggeredPromises = [];
+                const triggeredDebts = [];
+                
+                // 处理承诺
+                this.promises.forEach(promise => {
+                    if (promise.active && currentTurn >= promise.triggerTurn) {
+                        if (!promise.condition || this.checkCondition(promise.condition)) {
+                            this.executePromise(promise);
+                            triggeredPromises.push(promise);
+                            promise.active = false;
+                        }
+                    }
+                });
+                
+                // 处理债务
+                this.debts.forEach(debt => {
+                    if (debt.active && currentTurn >= debt.triggerTurn) {
+                        if (!debt.condition || this.checkCondition(debt.condition)) {
+                            this.executeDebt(debt);
+                            triggeredDebts.push(debt);
+                            debt.active = false;
+                        }
+                    }
+                });
+                
+                // 清理已执行的项目
+                this.promises = this.promises.filter(p => p.active);
+                this.debts = this.debts.filter(d => d.active);
+                
+                return { triggeredPromises, triggeredDebts };
+            }
+            
+            // 执行承诺
+            executePromise(promise) {
+                console.log(`承诺兑现: ${promise.description}`);
+                this.applyEffects(promise.effect, '承诺兑现');
+            }
+            
+            // 执行债务
+            executeDebt(debt) {
+                console.log(`债务到期: ${debt.description}`);
+                this.applyEffects(debt.penalty, '债务到期');
+            }
+            
+            // 应用效果
+            applyEffects(effects, source) {
+                Object.keys(effects).forEach(stat => {
+                    if (stat === 'hidden') {
+                        Object.keys(effects.hidden).forEach(hiddenStat => {
+                            this.gameState.hiddenStats[hiddenStat] = 
+                                (this.gameState.hiddenStats[hiddenStat] || 0) + effects.hidden[hiddenStat];
+                        });
+                    } else if (this.gameState.stats[stat] !== undefined) {
+                        this.gameState.stats[stat] += effects[stat];
+                        this.gameState.stats[stat] = Math.max(0, Math.min(100, this.gameState.stats[stat]));
+                    }
+                });
+                
+                // 显示效果指示器
+                this.showEffectNotification(effects, source);
+            }
+            
+            // 检查条件
+            checkCondition(condition) {
+                if (condition.type === 'flag') {
+                    return this.gameState.flags.has(condition.flag);
+                }
+                if (condition.type === 'stat') {
+                    const statValue = this.gameState.stats[condition.stat];
+                    switch (condition.operator) {
+                        case '>':
+                            return statValue > condition.value;
+                        case '<':
+                            return statValue < condition.value;
+                        case '>=':
+                            return statValue >= condition.value;
+                        case '<=':
+                            return statValue <= condition.value;
+                        case '==':
+                            return statValue === condition.value;
+                        default:
+                            return true;
+                    }
+                }
+                return true;
+            }
+            
+            // 显示效果通知
+            showEffectNotification(effects, source) {
+                const notification = document.createElement('div');
+                notification.className = 'promise-debt-notification';
+                notification.innerHTML = `
+                    <div class="notification-title">${source}</div>
+                    <div class="notification-effects">
+                        ${Object.keys(effects).map(stat => {
+                            if (stat !== 'hidden' && effects[stat] !== 0) {
+                                const change = effects[stat] > 0 ? '+' + effects[stat] : effects[stat];
+                                return `<span class="effect ${effects[stat] > 0 ? 'positive' : 'negative'}">${stat} ${change}</span>`;
+                            }
+                            return '';
+                        }).filter(html => html).join('')}
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // 动画显示
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
+            // 获取活跃的承诺和债务数量
+            getActiveCounts() {
+                return {
+                    promises: this.promises.filter(p => p.active).length,
+                    debts: this.debts.filter(d => d.active).length
+                };
+            }
+            
+            // 取消承诺或债务
+            cancelPromise(id) {
+                const index = this.promises.findIndex(p => p.id === id);
+                if (index > -1) {
+                    this.promises.splice(index, 1);
+                    return true;
+                }
+                return false;
+            }
+            
+            cancelDebt(id) {
+                const index = this.debts.findIndex(d => d.id === id);
+                if (index > -1) {
+                    this.debts.splice(index, 1);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // 已有足够的事件数据，无需生成更多
+        // generateMoreEvents(); // 注释掉这个未定义的函数调用
+        
+        // 添加特殊时代事件
+        const ERA_SPECIFIC_EVENTS = [
+            // 面壁期特殊事件
+            {
+                "id": "EVT_WALLBREAKER_002",
+                "era": "面壁期",
+                "speaker": "破壁人",
+                "title": "破壁行动",
+                "text": "破壁人开始行动，你的计划面临被曝光的风险。",
+                "tags": ["破壁人", "危机"],
+                "left": {
+                    "label": "加强防护",
+                    "effects": { "科研": +1, "民心": -1, "军备": +2, "资源": -1 },
+                    "addFlags": ["防护_加强"],
+                    "goto": null
+                },
+                "right": {
+                    "label": "改变计划",
+                    "effects": { "科研": +2, "民心": 0, "军备": -1, "资源": 0 },
+                    "addFlags": ["计划_改变"],
+                    "goto": null
+                },
+                "requires": { "flagsAll": ["面壁者_身份"], "flagsAny": [], "eraAtLeast": "面壁期", "notIfFlags": [] },
+                "weight": 1.5,
+                "unique": false,
+                "deathCard": false
+            },
+            // 威慑期特殊事件
+            {
+                "id": "EVT_DETERRENCE_002",
+                "era": "威慑期",
+                "speaker": "三体使者",
+                "title": "三体谈判",
+                "text": "三体文明提出和谈，但条件苛刻。是否接受？",
+                "tags": ["三体文明", "谈判"],
+                "left": {
+                    "label": "接受谈判",
+                    "effects": { "科研": -1, "民心": +2, "军备": -2, "资源": +1, "hidden": { "黑暗森林风险": -3 } },
+                    "addFlags": ["和谈_接受"],
+                    "goto": null
+                },
+                "right": {
+                    "label": "拒绝谈判",
+                    "effects": { "科研": +1, "民心": -1, "军备": +2, "资源": 0, "hidden": { "黑暗森林风险": +2 } },
+                    "addFlags": ["和谈_拒绝"],
+                    "goto": null
+                },
+                "requires": { "flagsAll": [], "flagsAny": [], "eraAtLeast": "威慑期", "notIfFlags": [] },
+                "weight": 1.8,
+                "unique": true,
+                "deathCard": false
+            },
+            // 远征期事件
+            {
+                "id": "EVT_EXPEDITION_001",
+                "era": "远征期",
+                "speaker": "远征队指挥官",
+                "title": "曲率驱动",
+                "text": "曲率驱动技术突破，可以开始星际远征。",
+                "tags": ["远征队", "曲率技术"],
+                "left": {
+                    "label": "大规模远征",
+                    "effects": { "科研": +2, "民心": -2, "军备": +1, "资源": -3, "hidden": { "黑暗森林风险": +3 } },
+                    "addFlags": ["大远征"],
+                    "goto": null
+                },
+                "right": {
+                    "label": "小规模探索",
+                    "effects": { "科研": +1, "民心": +1, "军备": 0, "资源": -1, "hidden": { "黑暗森林风险": +1 } },
+                    "addFlags": ["小探索"],
+                    "goto": null
+                },
+                "requires": { "flagsAll": [], "flagsAny": [], "eraAtLeast": "远征期", "notIfFlags": [] },
+                "weight": 2.0,
+                "unique": true,
+                "deathCard": false
+            }
+        ];
+        
+        EVENT_DATABASE.push(...ERA_SPECIFIC_EVENTS);
+        
+        // 添加死亡卡
+        const DEATH_CARDS = [
+            {
+                "id": "DEATH_SCIENCE_HIGH",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "科技失控",
+                "text": "过度的科技发展导致了不可控的后果，人类文明毁于自己的创造。",
+                "tags": ["死亡", "科技失控"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_PEOPLE_LOW",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "社会崩溃",
+                "text": "民心彻底崩塌，社会秩序荡然无存，人类失去了团结抵抗的能力。",
+                "tags": ["死亡", "社会崩溃"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_PEOPLE_HIGH",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "盲目乐观",
+                "text": "过度的乐观让人类失去警惕，在三体舰队到达时措手不及。",
+                "tags": ["死亡", "盲目乐观"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_MILITARY_LOW",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "不堪一击",
+                "text": "军事力量的严重不足让人类在面对三体舰队时毫无抵抗之力。",
+                "tags": ["死亡", "军事崩溃"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_MILITARY_HIGH",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "军事政变",
+                "text": "过度的军事化导致军方夺权，人类文明在内战中自我毁灭。",
+                "tags": ["死亡", "军事政变"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_RESOURCE_LOW",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "资源枯竭",
+                "text": "资源的彻底枯竭让人类失去了继续发展的基础，文明走向衰亡。",
+                "tags": ["死亡", "资源枯竭"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_RESOURCE_HIGH",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "资源浪费",
+                "text": "资源的极度浪费和不合理分配导致了全球性的经济崩溃。",
+                "tags": ["死亡", "经济崩溃"],
+                "deathCard": true
+            },
+            {
+                "id": "DEATH_DARK_FOREST",
+                "era": "通用",
+                "speaker": "系统",
+                "title": "黑暗森林打击",
+                "text": "其他文明发现了地球的位置，二向箔降维打击将太阳系化为平面。",
+                "tags": ["死亡", "黑暗森林"],
+                "deathCard": true
+            }
+        ];
+        
+        DEATH_CARDS.forEach(card => {
+            card.left = { "label": "接受命运", "effects": {}, "addFlags": [], "goto": null };
+            card.right = { "label": "接受命运", "effects": {}, "clearFlags": [], "goto": null };
+            card.requires = { "flagsAll": [], "flagsAny": [], "eraAtLeast": null, "notIfFlags": [] };
+            card.weight = 1.0;
+            card.unique = false;
+            EVENT_DATABASE.push(card);
+        });
+        
+        console.log(`总事件数: ${EVENT_DATABASE.length}`);
+        
+        // ==================== 游戏管理器 ====================
+        class GameManager {
+            constructor() {
+                console.log('GameManager构造函数开始...');
+                try {
+                    this.gameState = new GameState();
+                    console.log('GameState创建成功');
+                    
+                    this.currentCard = null;
+                    this.isDragging = false;
+                    this.dragStartX = 0;
+                    this.cardElement = null;
+                    this.choiceLeftElement = null;
+                    this.choiceRightElement = null;
+                    this.instructionShown = false;
+                    
+                    this.initializeElements();
+                    console.log('元素初始化完成');
+                    
+                    this.setupEventListeners();
+                    console.log('事件监听器设置完成');
+                    
+                    this.loadGame();
+                    console.log('游戏加载完成');
+                } catch (error) {
+                    console.error('GameManager构造函数失败:', error);
+                    throw error;
+                }
+            }
+            
+            initializeElements() {
+                this.cardElement = document.getElementById('eventCard');
+                this.choiceLeftElement = document.getElementById('choiceLeft');
+                this.choiceRightElement = document.getElementById('choiceRight');
+            }
+            
+            setupEventListeners() {
+                // 卡片拖拽事件
+                this.cardElement.addEventListener('mousedown', this.handleDragStart.bind(this));
+                this.cardElement.addEventListener('touchstart', this.handleDragStart.bind(this), { passive: false });
+                
+                document.addEventListener('mousemove', this.handleDragMove.bind(this));
+                document.addEventListener('touchmove', this.handleDragMove.bind(this), { passive: false });
+                
+                document.addEventListener('mouseup', this.handleDragEnd.bind(this));
+                document.addEventListener('touchend', this.handleDragEnd.bind(this));
+                
+                // 键盘事件
+                document.addEventListener('keydown', this.handleKeyboard.bind(this));
+                
+                // UI按钮事件
+                document.getElementById('menuBtn').addEventListener('click', () => {
+                    document.getElementById('menuModal').style.display = 'flex';
+                });
+                
+                document.getElementById('closeMenu').addEventListener('click', () => {
+                    document.getElementById('menuModal').style.display = 'none';
+                });
+                
+                document.getElementById('continueBtn').addEventListener('click', () => {
+                    document.getElementById('menuModal').style.display = 'none';
+                });
+                
+                document.getElementById('newGameBtn').addEventListener('click', () => {
+                    this.startNewGame();
+                    document.getElementById('menuModal').style.display = 'none';
+                });
+                
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.gameState.reset();
+                    this.loadGame();
+                    document.getElementById('menuModal').style.display = 'none';
+                });
+                
+                document.getElementById('helpBtn').addEventListener('click', () => {
+                    document.getElementById('menuModal').style.display = 'none';
+                    document.getElementById('helpModal').style.display = 'flex';
+                });
+                
+                document.getElementById('closeHelp').addEventListener('click', () => {
+                    document.getElementById('helpModal').style.display = 'none';
+                    document.getElementById('menuModal').style.display = 'flex';
+                });
+                
+                document.getElementById('startGameBtn').addEventListener('click', () => {
+                    document.getElementById('instructionOverlay').style.display = 'none';
+                    this.instructionShown = true;
+                    // 强制开始叶文洁事件
+                    this.currentCard = this.getEventById('crisis_yewenjie_001');
+                    this.displayCard(this.currentCard);
+                });
+                
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    this.startNewGame();
+                    document.getElementById('gameOverModal').style.display = 'none';
+                });
+                
+                document.getElementById('backToMenuBtn').addEventListener('click', () => {
+                    document.getElementById('gameOverModal').style.display = 'none';
+                    document.getElementById('menuModal').style.display = 'flex';
+                });
+                
+                // 调试面板切换
+                document.getElementById('debugToggle').addEventListener('click', () => {
+                    const panel = document.getElementById('debugPanel');
+                    panel.classList.toggle('show');
+                });
+            }
+            
+            loadGame() {
+                const hasExistingSave = this.gameState.load();
+                if (hasExistingSave && !this.instructionShown) {
+                    document.getElementById('instructionOverlay').style.display = 'none';
+                    this.instructionShown = true;
+                }
+                this.updateUI();
+                if (this.instructionShown) {
+                    // 如果是新游戏，强制开始叶文洁事件
+                    if (!hasExistingSave || this.gameState.turn === 1) {
+                        this.currentCard = this.getEventById('crisis_yewenjie_001');
+                        this.displayCard(this.currentCard);
+                    } else {
+                        this.nextCard();
+                    }
+                }
+            }
+            
+            startNewGame() {
+                this.gameState.reset();
+                this.instructionShown = true;
+                this.updateUI();
+                // 强制开始叶文洁事件链
+                this.currentCard = this.getEventById('crisis_yewenjie_001');
+                this.displayCard(this.currentCard);
+            }
+            
+            getEventById(id) {
+                return EVENT_DATABASE.find(event => event.id === id);
+            }
+            
+            nextCard() {
+                // 检查游戏结束条件
+                if (this.checkGameOver()) {
+                    return;
+                }
+                
+                // 处理承诺和债务
+                const promiseDebtResults = this.gameState.promiseDebtSystem.processTurn();
+                if (promiseDebtResults.triggeredPromises.length > 0 || promiseDebtResults.triggeredDebts.length > 0) {
+                    console.log('处理了承诺/债务:', promiseDebtResults);
+                }
+                
+                // 如果当前卡片有goto，跳转到指定卡片
+                if (this.currentCard && this.currentCard.gotoNext) {
+                    this.currentCard = this.getEventById(this.currentCard.gotoNext);
+                    this.currentCard.gotoNext = null;
+                    this.displayCard(this.currentCard);
+                    return;
+                }
+                
+                // 获取可用事件
+                const availableEvents = this.getAvailableEvents();
+                if (availableEvents.length === 0) {
+                    this.showGameOver('无事件可用', '时间线已经结束，游戏无法继续。');
+                    return;
+                }
+                
+                // 使用事件导演选择事件
+                this.currentCard = this.gameState.eventDirector.selectNextEvent(availableEvents);
+                this.displayCard(this.currentCard);
+                
+                // 更新回合
+                this.gameState.turn++;
+                this.updateUI();
+                this.gameState.save();
+            }
+            
+            getAvailableEvents() {
+                return EVENT_DATABASE.filter(event => {
+                    // 检查是否是死亡卡
+                    if (event.deathCard) {
+                        return false;
+                    }
+                    
+                    // 检查是否已经看过（unique事件）
+                    if (event.unique && this.gameState.seenEvents.has(event.id)) {
+                        return false;
+                    }
+                    
+                    // 检查时代要求
+                    if (event.era !== '通用' && event.era !== this.gameState.currentEra) {
+                        return false;
+                    }
+                    
+                    // 检查flag要求
+                    const req = event.requires;
+                    
+                    // 检查必需的flag
+                    if (req.flagsAll && req.flagsAll.length > 0) {
+                        if (!req.flagsAll.every(flag => this.gameState.flags.has(flag))) {
+                            return false;
+                        }
+                    }
+                    
+                    // 检查任一flag
+                    if (req.flagsAny && req.flagsAny.length > 0) {
+                        if (!req.flagsAny.some(flag => this.gameState.flags.has(flag))) {
+                            return false;
+                        }
+                    }
+                    
+                    // 检查禁止flag
+                    if (req.notIfFlags && req.notIfFlags.length > 0) {
+                        if (req.notIfFlags.some(flag => this.gameState.flags.has(flag))) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            selectRandomEvent(events) {
+                // 按权重随机选择
+                const totalWeight = events.reduce((sum, event) => sum + event.weight, 0);
+                let random = Math.random() * totalWeight;
+                
+                for (const event of events) {
+                    random -= event.weight;
+                    if (random <= 0) {
+                        return event;
+                    }
+                }
+                
+                return events[events.length - 1];
+            }
+            
+            displayCard(card) {
+                if (!card) return;
+                
+                document.getElementById('cardSpeaker').textContent = card.speaker;
+                document.getElementById('cardTitle').textContent = card.title;
+                document.getElementById('cardText').textContent = card.text;
+                
+                // 显示标签
+                const tagsContainer = document.getElementById('eventTags');
+                tagsContainer.innerHTML = '';
+                card.tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag';
+                    tagElement.textContent = tag;
+                    tagsContainer.appendChild(tagElement);
+                });
+                
+                // 更新选择预览
+                this.choiceLeftElement.querySelector('.choice-text').textContent = card.left.label;
+                this.choiceRightElement.querySelector('.choice-text').textContent = card.right.label;
+                
+                // 记录已看过的事件
+                this.gameState.seenEvents.add(card.id);
+            }
+            
+            handleChoice(isLeft) {
+                if (!this.currentCard) return;
+                
+                const choice = isLeft ? this.currentCard.left : this.currentCard.right;
+                
+                // 应用效果
+                this.applyEffects(choice.effects);
+                
+                // 处理flag
+                if (choice.addFlags) {
+                    choice.addFlags.forEach(flag => this.gameState.flags.add(flag));
+                }
+                if (choice.clearFlags) {
+                    choice.clearFlags.forEach(flag => this.gameState.flags.delete(flag));
+                }
+                
+                // 设置跳转
+                if (choice.goto) {
+                    this.currentCard.gotoNext = choice.goto;
+                }
+                
+                // 演示承诺/债务系统（基于事件内容添加一些示例）
+                this.addPromisesAndDebtsExample(choice, this.currentCard);
+                
+                // 更新UI
+                this.updateUI();
+                
+                // 显示效果指示器
+                this.showEffectIndicator(choice.effects);
+                
+                // 检查时代变更
+                this.checkEraProgress();
+                
+                // 延迟显示下一张卡
+                setTimeout(() => {
+                    this.nextCard();
+                }, 800);
+            }
+            
+            // 演示承诺/债务系统的使用
+            addPromisesAndDebtsExample(choice, card) {
+                // 基于事件标签和选择添加一些示例承诺和债务
+                
+                // 科研相关事件的承诺/债务
+                if (card.tags.includes('科研') || card.tags.includes('技术')) {
+                    if (choice.effects['科研'] > 0) {
+                        // 科研投入在未来可能带来成果
+                        this.gameState.promiseDebtSystem.addPromise(
+                            '科研成果到达',
+                            { '科研': 2, '资源': 1 },
+                            3 + Math.floor(Math.random() * 3)
+                        );
+                    }
+                    if (choice.effects['资源'] < -1) {
+                        // 资源投入过大可能带来财政压力
+                        this.gameState.promiseDebtSystem.addDebt(
+                            '财政压力',
+                            { '资源': -1, '民心': -1 },
+                            2
+                        );
+                    }
+                }
+                
+                // 军事相关事件的承诺/债务
+                if (card.tags.includes('军备') || card.tags.includes('防御')) {
+                    if (choice.effects['军备'] > 1) {
+                        // 军备投入可能在危机时发挥作用
+                        this.gameState.promiseDebtSystem.addPromise(
+                            '军事准备就绪',
+                            { '军备': 1, '民心': 1 },
+                            4
+                        );
+                    }
+                }
+                
+                // 民心相关事件的承诺/债务
+                if (card.tags.includes('民心') || card.tags.includes('社会')) {
+                    if (choice.effects['民心'] < -1) {
+                        // 民心下降可能引发社会问题
+                        this.gameState.promiseDebtSystem.addDebt(
+                            '社会动荡',
+                            { '民心': -2, '科研': -1 },
+                            3
+                        );
+                    }
+                }
+                
+                // 特殊事件的承诺/债务
+                if (this.gameState.turn % 10 === 0) {
+                    // 每10回合添加一个随机事件
+                    const randomEffects = ['科研', '民心', '军备', '资源'];
+                    const randomStat = randomEffects[Math.floor(Math.random() * randomEffects.length)];
+                    
+                    if (Math.random() < 0.5) {
+                        // 50%概率添加承诺
+                        const effect = { [randomStat]: 2 };
+                        this.gameState.promiseDebtSystem.addPromise(
+                            `${randomStat}意外收获`,
+                            effect,
+                            2 + Math.floor(Math.random() * 3)
+                        );
+                    } else {
+                        // 50%概率添加债务
+                        const penalty = { [randomStat]: -1 };
+                        this.gameState.promiseDebtSystem.addDebt(
+                            `${randomStat}意外损失`,
+                            penalty,
+                            1 + Math.floor(Math.random() * 2)
+                        );
+                    }
+                }
+            }
+            
+            applyEffects(effects) {
+                Object.keys(effects).forEach(stat => {
+                    if (stat === 'hidden') {
+                        Object.keys(effects.hidden).forEach(hiddenStat => {
+                            this.gameState.hiddenStats[hiddenStat] = 
+                                (this.gameState.hiddenStats[hiddenStat] || 0) + effects.hidden[hiddenStat];
+                        });
+                    } else if (this.gameState.stats[stat] !== undefined) {
+                        this.gameState.stats[stat] += effects[stat];
+                        this.gameState.stats[stat] = Math.max(0, Math.min(100, this.gameState.stats[stat]));
+                    }
+                });
+            }
+            
+            showEffectIndicator(effects) {
+                Object.keys(effects).forEach(stat => {
+                    if (stat !== 'hidden' && effects[stat] !== 0) {
+                        const indicator = document.createElement('div');
+                        indicator.className = `effect-indicator ${effects[stat] > 0 ? 'positive' : 'negative'}`;
+                        indicator.textContent = `${stat} ${effects[stat] > 0 ? '+' : ''}${effects[stat]}`;
+                        
+                        const statElement = document.getElementById(stat.toLowerCase() + 'Stat');
+                        if (statElement) {
+                            statElement.appendChild(indicator);
+                            setTimeout(() => {
+                                if (indicator.parentNode) {
+                                    indicator.parentNode.removeChild(indicator);
+                                }
+                            }, 2000);
+                        }
+                    }
+                });
+            }
+            
+            checkEraProgress() {
+                const turn = this.gameState.turn;
+                
+                if (turn >= 50 && this.gameState.currentEra === '锁死物理初期') {
+                    this.gameState.currentEra = '面壁期';
+                } else if (turn >= 100 && this.gameState.currentEra === '面壁期') {
+                    this.gameState.currentEra = '威慑期';
+                } else if (turn >= 150 && this.gameState.currentEra === '威慑期') {
+                    this.gameState.currentEra = '远征期';
+                }
+            }
+            
+            checkGameOver() {
+                // 检查常规死亡条件
+                for (const [stat, value] of Object.entries(this.gameState.stats)) {
+                    if (value <= 0 || value >= 100) {
+                        this.triggerDeath(stat, value);
+                        return true;
+                    }
+                }
+                
+                // 检查黑暗森林风险
+                if (this.gameState.hiddenStats['黑暗森林风险'] >= 50) {
+                    this.triggerDarkForestStrike();
+                    return true;
+                }
+                
+                // 检查胜利条件
+                if (this.checkVictoryConditions()) {
+                    this.showVictory();
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            triggerDeath(stat, value) {
+                let deathCardId;
+                if (value <= 0) {
+                    deathCardId = `DEATH_${stat.toUpperCase()}_LOW`;
+                } else {
+                    deathCardId = `DEATH_${stat.toUpperCase()}_HIGH`;
+                }
+                
+                // 查找对应的死亡卡
+                const deathCard = EVENT_DATABASE.find(card => 
+                    card.deathCard && card.id.includes(stat.toUpperCase())
+                );
+                
+                if (deathCard) {
+                    this.showGameOver(deathCard.title, deathCard.text);
+                } else {
+                    this.showGameOver('游戏结束', `${stat}的极端值导致了文明的终结。`);
+                }
+            }
+            
+            triggerDarkForestStrike() {
+                const deathCard = EVENT_DATABASE.find(card => card.id === 'DEATH_DARK_FOREST');
+                this.showGameOver(deathCard.title, deathCard.text);
+            }
+            
+            checkVictoryConditions() {
+                // 胜利条件：维持平衡200回合以上
+                if (this.gameState.turn >= 200) {
+                    const allStatsBalanced = Object.values(this.gameState.stats)
+                        .every(value => value >= 20 && value <= 80);
+                    if (allStatsBalanced && this.gameState.hiddenStats['黑暗森林风险'] < 30) {
+                        return true;
+                    }
+                }
+                
+                // 特殊胜利条件：完成文明分流
+                if (this.gameState.flags.has('文明分流_完成') && 
+                    this.gameState.hiddenStats['黑暗森林风险'] < 20) {
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            showGameOver(title, description) {
+                const content = document.getElementById('gameOverContent');
+                content.innerHTML = `
+                    <div class="death-screen">
+                        <div class="death-title">${title}</div>
+                        <p>${description}</p>
+                        <div style="margin-top: 1rem;">
+                            <p><strong>生存回合:</strong> ${this.gameState.turn}</p>
+                            <p><strong>最终时代:</strong> ${this.gameState.currentEra}</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameOverModal').style.display = 'flex';
+                this.gameState.gameOver = true;
+            }
+            
+            showVictory() {
+                const content = document.getElementById('gameOverContent');
+                content.innerHTML = `
+                    <div class="victory-screen">
+                        <div class="victory-title">人类胜利！</div>
+                        <p>在你的英明领导下，人类文明成功度过了三体危机，走向了光明的未来。</p>
+                        <div style="margin-top: 1rem;">
+                            <p><strong>胜利回合:</strong> ${this.gameState.turn}</p>
+                            <p><strong>最终时代:</strong> ${this.gameState.currentEra}</p>
+                            <p><strong>文明评价:</strong> 传奇</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameOverModal').style.display = 'flex';
+                this.gameState.victory = true;
+            }
+            
+            updateUI() {
+                // 更新计量条 - 映射新统计到旧ID
+                const statMapping = {
+                    '智子封锁': 'science',
+                    '人类团结': 'people',
+                    '威慑度': 'military',
+                    '生存资源': 'resources'
+                };
+                
+                Object.keys(this.gameState.stats).forEach(stat => {
+                    const mappedStat = statMapping[stat] || stat.toLowerCase();
+                    const fillElement = document.getElementById(mappedStat + 'Fill');
+                    const statElement = document.getElementById(mappedStat + 'Stat');
+                    if (fillElement) {
+                        fillElement.style.width = `${this.gameState.stats[stat]}%`;
+                    }
+                    
+                    // 添加危险状态样式
+                    if (statElement) {
+                        if (this.gameState.stats[stat] <= 10 || this.gameState.stats[stat] >= 90) {
+                            statElement.classList.add('critical');
+                        } else {
+                            statElement.classList.remove('critical');
+                        }
+                    }
+                });
+                
+                // 更新时代和回合信息
+                document.getElementById('eraInfo').textContent = this.gameState.currentEra;
+                document.getElementById('turnInfo').textContent = `第 ${this.gameState.turn} 年`;
+                
+                // 更新调试面板
+                this.updateDebugPanel();
+            }
+            
+            // 更新调试面板
+            updateDebugPanel() {
+                // 更新事件导演信息
+                document.getElementById('debugCurrentEra').textContent = this.gameState.currentEra;
+                document.getElementById('debugCurrentTurn').textContent = this.gameState.turn.toString();
+                document.getElementById('debugSeenEvents').textContent = this.gameState.seenEvents.size.toString();
+                
+                // 更新承诺/债务系统信息
+                const activePromises = this.gameState.promiseDebtSystem.promises.filter(p => p.active);
+                const activeDebts = this.gameState.promiseDebtSystem.debts.filter(d => d.active);
+                
+                document.getElementById('debugActivePromises').textContent = activePromises.length.toString();
+                document.getElementById('debugActiveDebts').textContent = activeDebts.length.toString();
+                
+                // 更新承诺列表
+                const promisesList = document.getElementById('debugPromisesList');
+                promisesList.innerHTML = '';
+                activePromises.forEach(promise => {
+                    const li = document.createElement('li');
+                    li.className = 'debug-list-item';
+                    const remainingTurns = promise.triggerTurn - this.gameState.turn;
+                    li.innerHTML = `
+                        <strong>承诺 #${promise.id}:</strong> ${promise.description}<br>
+                        <small>剩余回合: ${Math.max(0, remainingTurns)}</small>
+                    `;
+                    promisesList.appendChild(li);
+                });
+                
+                // 更新债务列表
+                const debtsList = document.getElementById('debugDebtsList');
+                debtsList.innerHTML = '';
+                activeDebts.forEach(debt => {
+                    const li = document.createElement('li');
+                    li.className = 'debug-list-item';
+                    const remainingTurns = debt.triggerTurn - this.gameState.turn;
+                    li.innerHTML = `
+                        <strong>债务 #${debt.id}:</strong> ${debt.description}<br>
+                        <small>剩余回合: ${Math.max(0, remainingTurns)}</small>
+                    `;
+                    debtsList.appendChild(li);
+                });
+                
+                // 更新下一张卡牌预测
+                const availableEvents = this.getAvailableEvents();
+                const debugInfo = this.gameState.eventDirector.getDebugInfo(availableEvents);
+                
+                document.getElementById('debugCandidateCount').textContent = debugInfo.candidateCount.toString();
+                
+                const topCardsList = document.getElementById('debugTopCards');
+                topCardsList.innerHTML = '';
+                debugInfo.topCards.forEach(card => {
+                    const li = document.createElement('li');
+                    li.className = 'debug-list-item';
+                    li.innerHTML = `
+                        <div class="debug-card-weight">
+                            <div>
+                                <strong>${card.id}</strong><br>
+                                <small>${card.title} [${card.era}]</small>
+                            </div>
+                            <span class="debug-weight-value">${card.weight}</span>
+                        </div>
+                    `;
+                    topCardsList.appendChild(li);
+                });
+                
+                // 更新隐藏数值
+                document.getElementById('debugDarkForest').textContent = 
+                    (this.gameState.hiddenStats['黑暗森林风险'] || 0).toString();
+                document.getElementById('debugTrisolaris').textContent = 
+                    (this.gameState.hiddenStats['三体威胁'] || 0).toString();
+            }
+            
+            // 拖拽处理
+            handleDragStart(e) {
+                e.preventDefault();
+                this.isDragging = true;
+                this.dragStartX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                this.cardElement.classList.add('dragging');
+            }
+            
+            handleDragMove(e) {
+                if (!this.isDragging) return;
+                
+                const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+                const deltaX = currentX - this.dragStartX;
+                const cardWidth = this.cardElement.offsetWidth;
+                const threshold = cardWidth * 0.3;
+                
+                // 更新卡片位置和倾斜
+                const rotation = (deltaX / cardWidth) * 30;
+                this.cardElement.style.transform = `translateX(${deltaX}px) rotateZ(${rotation}deg)`;
+                
+                // 显示选择预览
+                if (Math.abs(deltaX) > threshold) {
+                    if (deltaX > 0) {
+                        this.choiceRightElement.classList.add('visible');
+                        this.choiceLeftElement.classList.remove('visible');
+                    } else {
+                        this.choiceLeftElement.classList.add('visible');
+                        this.choiceRightElement.classList.remove('visible');
+                    }
+                } else {
+                    this.choiceLeftElement.classList.remove('visible');
+                    this.choiceRightElement.classList.remove('visible');
+                }
+            }
+            
+            handleDragEnd(e) {
+                if (!this.isDragging) return;
+                
+                const currentX = e.type === 'mouseup' ? e.clientX : 
+                    (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : this.dragStartX);
+                const deltaX = currentX - this.dragStartX;
+                const cardWidth = this.cardElement.offsetWidth;
+                const threshold = cardWidth * 0.3;
+                
+                this.isDragging = false;
+                this.cardElement.classList.remove('dragging');
+                
+                // 重置卡片位置
+                this.cardElement.style.transform = '';
+                this.choiceLeftElement.classList.remove('visible');
+                this.choiceRightElement.classList.remove('visible');
+                
+                // 处理选择
+                if (Math.abs(deltaX) > threshold) {
+                    this.handleChoice(deltaX < 0);
+                }
+            }
+            
+            // 键盘处理
+            handleKeyboard(e) {
+                if (this.gameState.gameOver || this.gameState.victory) return;
+                
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.handleChoice(true);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    this.handleChoice(false);
+                }
+            }
+        }
+        
+        // ==================== 游戏初始化 ====================
+        let gameManager;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM加载完成，开始初始化游戏...');
+            
+            // 检查必要元素是否存在
+            const loader = document.getElementById('loader');
+            const gameContainer = document.getElementById('gameContainer');
+            const loadingLog = document.getElementById('loadingLog');
+            
+            if (!loader || !gameContainer) {
+                console.error('关键DOM元素未找到');
+                return;
+            }
+            
+            // 日志函数
+            function log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry log-${type}`;
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                loadingLog.appendChild(logEntry);
+                loadingLog.scrollTop = loadingLog.scrollHeight;
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+            
+            // 进度条更新函数
+            function updateProgress(percent, message) {
+                const progressBar = document.querySelector('.loader-progress');
+                if (progressBar) {
+                    progressBar.style.width = `${percent}%`;
+                }
+                log(message);
+            }
+            
+            // 开始加载流程
+            log('开始初始化三体王权游戏...', 'info');
+            updateProgress(10, '检查游戏环境...');
+            
+            setTimeout(() => {
+                updateProgress(20, '加载事件数据库...');
+                
+                setTimeout(() => {
+                    updateProgress(40, '初始化游戏状态...');
+                    
+                    setTimeout(() => {
+                        updateProgress(60, '设置游戏界面...');
+                        
+                        setTimeout(() => {
+                            updateProgress(80, '准备游戏逻辑...');
+                            
+                            setTimeout(() => {
+                                updateProgress(100, '游戏初始化完成！');
+                                
+                                setTimeout(() => {
+                                    try {
+                                        // 隐藏加载界面并显示游戏
+                                        loader.style.display = 'none';
+                                        gameContainer.style.display = 'block';
+                                        
+                                        // 延迟初始化游戏，避免DOM元素问题
+                                        setTimeout(() => {
+                                            try {
+                                                gameManager = new GameManager();
+                                                log('游戏启动成功！', 'success');
+                                                console.log('游戏初始化成功');
+                                            } catch (error) {
+                                                log(`游戏初始化失败: ${error.message}`, 'error');
+                                                console.error('游戏初始化失败:', error);
+                                                console.error('错误详情:', error.stack);
+                                                
+                                                // 显示错误信息，但不阻止界面显示
+                                                const errorDiv = document.createElement('div');
+                                                errorDiv.style.cssText = 'background: #EF5350; color: white; padding: 1rem; margin: 1rem; border-radius: 8px; text-align: center;';
+                                                errorDiv.innerHTML = `
+                                                    <h3>⚠️ 游戏初始化警告</h3>
+                                                    <p>游戏界面已显示，但某些功能可能受限</p>
+                                                    <p>错误详情: ${error.message}</p>
+                                                    <p>请查看浏览器控制台获取更多信息</p>
+                                                `;
+                                                gameContainer.insertBefore(errorDiv, gameContainer.firstChild);
+                                            }
+                                        }, 1000);
+                                        
+                                    } catch (error) {
+                                        log(`界面切换失败: ${error.message}`, 'error');
+                                        console.error('界面切换失败:', error);
+                                    }
+                                }, 500);
+                            }, 300);
+                        }, 300);
+                    }, 300);
+                }, 300);
+            }, 300);
+        });
+    </script>
+
+    <script>
+        // Visitor heartbeat for page-level tracking
+        (function(){
+            function sid(){
+                try{
+                    const k='vm_session_id';
+                    let v=localStorage.getItem(k);
+                    if(!v){ v='sess_'+Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(k,v);} 
+                    return v;
+                }catch(e){ return 'sess_'+Math.random().toString(36).slice(2)+Date.now().toString(36); }
+            }
+            const sessionId = sid();
+            const userAgent = navigator.userAgent||'';
+            const sectionId = '/3body/';
+            function beat(){
+                fetch('/api/visitors/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sectionId,sessionId,userAgent})}).catch(()=>{});
+            }
+            beat();
+            setInterval(beat,20000);
+        })();
+    </script>
+
+</body>
+</html>
