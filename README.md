@@ -45,3 +45,7 @@ This directory contains only the production files:
 ---
 
 *"Give civilization to time, not time to civilization."*
+
+<!-- minervacap-pre-hiklik-promotion -->
+> **Discover Klik:** https://pre.hiklik.ai/
+<!-- /minervacap-pre-hiklik-promotion -->
